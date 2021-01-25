@@ -578,4 +578,36 @@ ashuxcv2   python demo.py   Up      0.0.0.0:1122->5000/tcp
  4416  docker-compose logs  ashuapp2
 
 ```
+##  Java code 
 
+```
+class myclass { 
+    public static void main(String args[]) 
+    { 
+        // test expression 
+        while (true) { 
+            System.out.println("Hello World Welcome to Docker CE"); 
+  
+            // update expression 
+        } 
+    } 
+} 
+
+```
+
+## Dockerfile 
+```
+
+FROM java
+MAINTAINER  ashutoshh
+RUN mkdir /jcode
+COPY hello.java  /jcode/hello.java
+WORKDIR  /jcode
+RUN javac hello.java 
+# compiling java code 
+CMD ["java","myclass"] 
+# default parent process 
+
+```
+
+## COmpose file 
