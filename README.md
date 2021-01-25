@@ -288,5 +288,194 @@ PID   USER     TIME  COMMAND
    18 root      0:00 ps -e
    
  ```
+ ## application containerization process
  
+ <img src="appcont.png">
+ 
+ 
+ ## Example 1 for PYthon code 
+ 
+ ```
+ [ec2-user@ip-172-31-43-246 pycode]$ cat  ashu.py 
+import  time
+
+while 3 > 2 :
+    c=time.ctime()
+    print("checking system current time plz wait...")
+    time.sleep(3)
+    print("current time is ",c)
+    print("__________________")
+    print("__________________")
+    
+```
+
+## Dockerfile
+
+```
+[ec2-user@ip-172-31-43-246 pycode]$ cat  Dockerfile 
+FROM  python  
+# it will take default python image from docker hub is not present in docker engine 
+MAINTAINER  ashutoshh@linux.com , ashutoshh
+# if required help then do connect me 
+RUN  mkdir  /codes
+#  create directory in new docker image 
+COPY  ashu.py  /codes/ashu.py 
+#  from docker host to new docker image copy 
+# copy can only take data from the location where Dockerfile is present 
+CMD  ["python","/codes/ashu.py"]
+
+# newly created docker image will be using above default parent process 
+# means if we create container from this docker image the parent process will be default
+
+```
+
+## sending build instrction to Docker engine 
+
+```
+[ec2-user@ip-172-31-43-246 pycode]$ ls
+Dockerfile  ashu.py
+[ec2-user@ip-172-31-43-246 pycode]$ docker  build  -t  ashupython:codev1  . 
+Sending build context to Docker daemon  3.584kB
+Step 1/5 : FROM  python
+ ---> da24d18bf4bf
+Step 2/5 : MAINTAINER  ashutoshh@linux.com , ashutoshh
+ ---> Running in c944fdd7ab67
+Removing intermediate container c944fdd7ab67
+ ---> 0baa9798a707
+Step 3/5 : RUN  mkdir  /codes
+ ---> Running in 71b5ba697947
+Removing intermediate container 71b5ba697947
+ ---> f4ede91c98f9
+Step 4/5 : COPY  ashu.py  /codes/ashu.py
+ ---> 27fe0b5e7acd
+Step 5/5 : CMD  ["python","/codes/ashu.py"]
+ ---> Running in 19d3dca1a84e
+Removing intermediate container 19d3dca1a84e
+ ---> c13e8fa43b27
+Successfully built c13e8fa43b27
+Successfully tagged ashupython:codev1
+[ec2-user@ip-172-31-43-246 pycode]$ docker  images
+REPOSITORY            TAG                 IMAGE ID            CREATED             SIZE
+ashupython            codev1              c13e8fa43b27        6 seconds ago       885MB
+alpine                latest              7731472c3f2a        10 days ago         5.61MB
+oraclelinux           8.3                 f4a1f2c861ca        10 days ago         429MB
+busybox               latest              b97242f89c8a        12 days ago         1.23MB
+python                latest              da24d18bf4bf        12 days ago         885MB
+quay.io/ocsci/nginx   latest              c39a868aad02        2 months ago        133MB
+java                  latest              d23bdf5b1b1b        4 years ago         643MB
+
+```
+
+## dumping docker image information 
+
+```
+[ec2-user@ip-172-31-43-246 pycode]$ docker  inspect   ashupython:codev1  
+[
+    {
+        "Id": "sha256:c13e8fa43b278342a912b3ef1f0716aae1e405cd38d5e7e55f5c72e62bcbc027",
+        "RepoTags": [
+            "ashupython:codev1"
+        ],
+        "RepoDigests": [],
+        "Parent": "sha256:27fe0b5e7acd84a5d0041738af4013b5ac94c443830e8bb03905aa87b08b12f4",
+        "Comment": "",
+        "Created": "2021-01-25T09:09:26.293463216Z",
+        "Container": "19d3dca1a84e3d28640b4b6e291ee769b87fc720afbabad10a3146d590fa5f01",
+        "ContainerConfig": {
+            "Hostname": "19d3dca1a84e",
+            "Domainname": "",
+            "User": "",
+            "AttachStdin": false,
+            "AttachStdout": false,
+
+
+```
+
+   ## Creating container from This Docker image
+   
+   ```
+   [ec2-user@ip-172-31-43-246 pycode]$ docker  run  -itd --name ashuc22  ashupython:codev1  
+b83333b544b553aa824148fae0ba49c7b1a64f6754f83bdaeea762429a5755f9
+```
+
+
+## Python Flask web application 
+
+### python flask app 
+
+```
+[ec2-user@ip-172-31-43-246 flaskapp]$ ls -a
+.  ..  .dockerignore  .git  Dockerfile  README.md  demo.py  requirements.txt  static
+[ec2-user@ip-172-31-43-246 flaskapp]$ cat  .dockerignore 
+Dockerfile
+README.md
+.dockerignore
+.git 
+[ec2-user@ip-172-31-43-246 flaskapp]$ cat  Dockerfile 
+FROM python
+MAINTAINER  ashutoshh@linux.com
+RUN mkdir  /myapps
+WORKDIR  /myapps
+# to change directory location in container side like similar to cd command in linux 
+COPY  .  . 
+#  first dot means all the data from current location 
+# second dot means target location in newly created docker image 
+RUN  pip install -r requirements.txt 
+# meaning of RUN instrction is to run any thing inside container
+CMD  ["python","demo.py"]
+
+
+[ec2-user@ip-172-31-43-246 flaskapp]$ docker build  -t  ashuflask:v1  . 
+Sending build context to Docker daemon  7.168kB
+Step 1/7 : FROM python
+ ---> da24d18bf4bf
+Step 2/7 : MAINTAINER  ashutoshh@linux.com
+ ---> Running in 889da2febef5
+Removing intermediate container 889da2febef5
+ ---> f49c6ea1bc05
+Step 3/7 : RUN mkdir  /myapps
+ ---> Running in 0872db28eea2
+Removing intermediate container 0872db28eea2
+ ---> c8da1845ba1b
+Step 4/7 : WORKDIR  /myapps
+ ---> Running in 67bc91ac4c7e
+Removing intermediate container 67bc91ac4c7e
+ ---> be019124baaf
+Step 5/7 : COPY  .  .
+ ---> 354f823dc751
+Step 6/7 : RUN  pip install -r requirements.txt
+ ---> Running in 72e6056f8294
+Collecting flask
+  Downloading Flask-1.1.2-py2.py3-none-any.whl (94 kB)
+Collecting click>=5.1
+  Downloading click-7.1.2-py2.py3-none-any.whl (82 kB)
+Collecting itsdangerous>=0.24
+  Downloading itsdangerous-1.1.0-py2.py3-none-any.whl (16 kB)
+Collecting Jinja2>=2.10.1
+  Downloading Jinja2-2.11.2-py2.py3-none-any.whl (125 kB)
+Collecting MarkupSafe>=0.23
+  Downloading MarkupSafe-1.1.1.tar.gz (19 kB)
+Collecting Werkzeug>=0.15
+  Downloading Werkzeug-1.0.1-py2.py3-none-any.whl (298 kB)
+Building wheels for collected packages: MarkupSafe
+  Building wheel for MarkupSafe (setup.py): started
+  Building wheel for MarkupSafe (setup.py): finished with status 'done'
+  Created wheel for MarkupSafe: filename=MarkupSafe-1.1.1-cp39-cp39-linux_x86_64.whl size=32233 sha256=0cd3713c17e97463c240f440f4f48a2c608e9d766b27dd2f340007c4bef55f1c
+  Stored in directory: /root/.cache/pip/wheels/e0/19/6f/6ba857621f50dc08e084312746ed3ebc14211ba30037d5e44e
+Successfully built MarkupSafe
+Installing collected packages: MarkupSafe, Werkzeug, Jinja2, itsdangerous, click, flask
+Successfully installed Jinja2-2.11.2 MarkupSafe-1.1.1 Werkzeug-1.0.1 click-7.1.2 flask-1.1.2 itsdangerous-1.1.0
+WARNING: You are using pip version 20.3.3; however, version 21.0 is available.
+You should consider upgrading via the '/usr/local/bin/python -m pip install --upgrade pip' command.
+Removing intermediate container 72e6056f8294
+ ---> 46beff433c63
+Step 7/7 : CMD  ["python","demo.py"]
+ ---> Running in 9611a956c94c
+Removing intermediate container 9611a956c94c
+ ---> 08f2581d8a12
+Successfully built 08f2581d8a12
+Successfully tagged ashuflask:v1
+```
+
+
  
