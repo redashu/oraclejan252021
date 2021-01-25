@@ -477,5 +477,20 @@ Successfully built 08f2581d8a12
 Successfully tagged ashuflask:v1
 ```
 
+## Image Registry 
+
+<img src="img.png">
+
+## pushing image on Docker hub 
+
+```
+ 180  docker  tag   ashuflask:v1    dockerashu/ashuflask:v1
+  181  docker images
+  182  history 
+  183  docker login 
+  184  docker  push   dockerashu/ashuflask:v1
+  185  docker logout
+
+```
 
  
