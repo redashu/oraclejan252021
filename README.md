@@ -115,3 +115,60 @@ Got permission denied while trying to connect to the Docker daemon socket at uni
 
 <img src="dcoptions.png">
 
+
+# Searching images on Docker hub 
+
+```
+ 15  docker version 
+   16  docker  search  java 
+   17  docker  search  python
+   18  docker  search  mysql 
+   19  docker  search  dockerashu
+   20  docker  search  ashutoshh
+   
+ ```
+ 
+ ## Docker images on docker engine 
+ 
+ ```
+    24  docker  pull  java 
+   25  docker pull store/oracle/jdk:11
+   26  docker  pull  java 
+   27  docker  images
+   28  docker  pull  python 
+   29  docker pull oraclelinux
+   30  docker pull oraclelinux:8.3
+   31  docker images
+   32  docker pull alpine 
+   33  docker pull busybox 
+   34  history 
+[ec2-user@ip-172-31-43-246 ~]$ docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+alpine              latest              7731472c3f2a        10 days ago         5.61MB
+oraclelinux         8.3                 f4a1f2c861ca        10 days ago         429MB
+busybox             latest              b97242f89c8a        11 days ago         1.23MB
+python              latest              da24d18bf4bf        12 days ago         885MB
+java                latest              d23bdf5b1b1b        4 years ago         643MB
+
+```
+
+## image location in Docker engine server
+
+```
+Name: ip-172-31-43-246.ec2.internal
+ ID: 4MIK:ZUZD:J3FL:SBMM:YOIK:Y4YP:RIPI:6VFS:4IG5:F2MS:2NBY:E6DH
+ Docker Root Dir: /var/lib/docker
+ Debug Mode: false
+ Registry: https://index.docker.io/v1/
+ Labels:
+ Experimental: false
+ Insecure Registries:
+  127.0.0.0/8
+ Live Restore Enabled: false
+
+[ec2-user@ip-172-31-43-246 ~]$ sudo -i
+[root@ip-172-31-43-246 ~]# cd  /var/lib/docker/
+[root@ip-172-31-43-246 docker]# ls
+builder  buildkit  containers  image  network  overlay2  plugins  runtimes  swarm  tmp  trust  volumes
+
+```
