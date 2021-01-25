@@ -539,4 +539,43 @@ networks:  # different network  for your self to avoid conflict
  
  ```
  
+ ## deploy container using compose file
  
+ ```
+ ❯ ls
+docker-compose.yaml
+❯ docker-compose up  -d
+Creating network "myexamples_ashubr1" with the default driver
+Creating ashuxcv2 ... done
+Creating ashucx1  ... done
+❯ docker-compose ps
+  Name        Command       State           Ports         
+----------------------------------------------------------
+ashucx1    ping fb.com      Up                            
+ashuxcv2   python demo.py   Up      0.0.0.0:1122->5000/tcp
+```
+
+## compose commands 
+
+```
+ 4399  docker-compose up  -d
+ 4400  docker-compose ps
+ 4401  docker-compose down 
+ 4402  docker-compose down  --remove-orphans
+ 4403  history
+ 4404  docker context ls
+ 4405  ls
+ 4406  docker-compose up  -d
+ 4407  docker-compose ps
+ 4408  docker-compose  stop  ashuapp1 
+ 4409  docker-compose ps
+ 4410  docker-compose  start  ashuapp1 
+ 4411  docker-compose ps
+ 4412  history
+ 4413  docker-compose kill
+ 4414  docker-compose start
+ 4415  docker-compose logs  ashuapp1
+ 4416  docker-compose logs  ashuapp2
+
+```
+
