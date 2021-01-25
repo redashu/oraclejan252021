@@ -1,1 +1,4 @@
-# oraclejan252021
+# Session planning 
+
+<img src="session.png">
+
