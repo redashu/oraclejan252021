@@ -1,0 +1,19 @@
+version: '3.8' # compose file version
+services:
+ ashuapp1:  # name of first app 
+  image: alpine
+  container_name: ashucx1
+  command: ping fb.com
+  networks: # using the custom network created in network section 
+   - ashubr1 
+
+ ashuapp2:  # second app
+  image: dockerashu/ashuflask:v1
+  container_name: ashuxcv2 
+  networks: # using the custom network created in network section 
+   - ashubr1 
+  ports: # - in YAML means array 
+   - "1122:5000" 
+
+networks:  # different network  for your self to avoid conflict 
+ ashubr1: # name of my network in Docker engine 

@@ -1,0 +1,10 @@
+version: '3.8'
+networks:
+  ashubr2: # name of network 
+services:
+  ashujapp1:
+    image: ashujava:v1 # image i want to build
+    build: . # location of Dockerfile
+    container_name: ashujc1 
+    networks:
+      - ashubr2 # using above created network 
