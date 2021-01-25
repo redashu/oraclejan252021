@@ -172,3 +172,121 @@ Name: ip-172-31-43-246.ec2.internal
 builder  buildkit  containers  image  network  overlay2  plugins  runtimes  swarm  tmp  trust  volumes
 
 ```
+
+
+## docker image registry options 
+
+<img src="imgreg.png">
+
+## container with parent process
+
+<img src="containerpp.png">
+
+##. first ever container 
+
+```
+[ec2-user@ip-172-31-43-246 ~]$ docker run  --name  ashuc1  alpine   ping 8.8.8.8
+PING 8.8.8.8 (8.8.8.8): 56 data bytes
+64 bytes from 8.8.8.8: seq=0 ttl=112 time=1.426 ms
+64 bytes from 8.8.8.8: seq=1 ttl=112 time=1.443 ms
+64 bytes from 8.8.8.8: seq=2 ttl=112 time=1.685 ms
+6
+
+```
+
+## container process
+
+```
+   45  docker run  --name  ashuc1  alpine   ping 8.8.8.8
+   46  history 
+[ec2-user@ip-172-31-43-246 ~]$ docker  ps
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+[ec2-user@ip-172-31-43-246 ~]$ docker  ps -a
+CONTAINER ID        IMAGE               COMMAND             CREATED              STATUS                      PORTS               NAMES
+900042a2d477        alpine              "ping 8.8.8.8"      About a minute ago   Exited (0) 48 seconds ago                       ashuc1
+
+```
+
+## some docker command history 
+
+```
+[ec2-user@ip-172-31-43-246 ~]$ docker  ps  -a
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                     PORTS               NAMES
+900042a2d477        alpine              "ping 8.8.8.8"      3 minutes ago       Exited (0) 2 minutes ago                       ashuc1
+[ec2-user@ip-172-31-43-246 ~]$ docker  start  ashuc1
+ashuc1
+[ec2-user@ip-172-31-43-246 ~]$ docker  ps  
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+e239d1e2faa7        python              "ping 8.8.8.8"      11 seconds ago      Up 10 seconds                           vivek
+900042a2d477        alpine              "ping 8.8.8.8"      3 minutes ago       Up 4 seconds                            ashuc1
+[ec2-user@ip-172-31-43-246 ~]$ docker  ps  
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+e239d1e2faa7        python              "ping 8.8.8.8"      31 seconds ago      Up 30 seconds                           vivek
+900042a2d477        alpine              "ping 8.8.8.8"      4 minutes ago       Up 24 seconds                           ashuc1
+[ec2-user@ip-172-31-43-246 ~]$ docker  stop ashuc1 
+ashuc1
+[ec2-user@ip-172-31-43-246 ~]$ docker  ps  
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+[ec2-user@ip-172-31-43-246 ~]$ docker  start  ashuc1
+ashuc1
+[ec2-user@ip-172-31-43-246 ~]$ docker  ps  
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                  PORTS               NAMES
+1b6ffcb3d507        java                "ping 8.8.8.8"      2 seconds ago       Up Less than a second                       venkat
+900042a2d477        alpine              "ping 8.8.8.8"      5 minutes ago       Up 2 seconds                                ashuc1
+[ec2-user@ip-172-31-43-246 ~]$ docker  kill  ashuc1 
+ashuc1
+
+```
+
+
+## checking output of parent process 
+
+```
+  66  docker  logs  ashuc1  
+   67  docker  logs  ashuc1  -f
+   
+```
+## removing container 
+
+```
+[ec2-user@ip-172-31-43-246 ~]$ docker kill ashuc1
+ashuc1
+[ec2-user@ip-172-31-43-246 ~]$ docker rm  ashuc1
+ashuc1
+
+```
+
+## best practise for launching containers
+
+```
+[ec2-user@ip-172-31-43-246 ~]$ docker run  --name ashuc2  -it  -d  alpine  ping fb.com 
+1a349040cc346112dc6b3d454ddd6da7d550fd6a9eb91e133d0f74c6c7659516
+[ec2-user@ip-172-31-43-246 ~]$ docker  ps
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+1a349040cc34        alpine              "ping fb.com"       5 seconds ago       Up 4 seconds                            ashuc2
+
+```
+
+## child process in running container 
+
+```
+ec2-user@ip-172-31-43-246 ~]$ 
+[ec2-user@ip-172-31-43-246 ~]$ docker exec -it    ashuc3 sh 
+/ # 
+/ # cat  /etc/os-release 
+NAME="Alpine Linux"
+ID=alpine
+VERSION_ID=3.13.0
+PRETTY_NAME="Alpine Linux v3.13"
+HOME_URL="https://alpinelinux.org/"
+BUG_REPORT_URL="https://bugs.alpinelinux.org/"
+/ # ps  -e
+PID   USER     TIME  COMMAND
+    1 root      0:00 ping google.com
+    6 root      0:00 ping 8.8.8.8
+   11 root      0:00 sh
+   18 root      0:00 ps -e
+   
+ ```
+ 
+ 
