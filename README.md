@@ -405,7 +405,7 @@ hello  world
  
  ## portainer as volume 
  
- 
+``` 
  ❯ docker run -d --name webui -p 9000:9000  -v  /var/run/docker.sock:/var/run/docke.sock portainer/portainer
 Unable to find image 'portainer/portainer:latest' locally
 latest: Pulling from portainer/portainer
@@ -422,3 +422,49 @@ b47a9eb40990   portainer/portainer   "/portainer"             8 seconds ago    U
 9d6a9c0e18a3   alpine                "sh"                     11 minutes ago   Up 11 minutes                            viveks
 
 ```
+
+##  image layer discussion 
+
+<img src="imglayer.png">
+
+
+## PROBlem in container based app hosting 
+
+<img src="contapp.png">
+
+## container orchestration tools and tech 
+
+<img src="corch.png">
+
+# k8s Intro 
+
+<img src="k8s.png">
+
+## k8s master component 
+
+<img src="master.png">
+
+## minion node 
+
+<img src="minion.png">
+
+## deployment of k8s cluster 
+
+<img src="install.png">
+
+## minikube installation 
+
+```
+https://minikube.sigs.k8s.io/docs/start/
+```
+
+## checking minikube version 
+
+```
+❯ minikube  version
+minikube version: v1.17.0
+commit: 7e8b5a89575945ba8f8246bfe547178c1a995198
+
+```
+
+
