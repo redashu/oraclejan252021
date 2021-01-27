@@ -284,3 +284,141 @@ Server:
    
 ```
 
+## contaier storage
+
+<img src="cst.png">
+
+## checking ephemral nature of container 
+
+```
+❯ docker run  -ti  --rm   alpine  sh
+/ # ls
+bin    dev    etc    home   lib    media  mnt    opt    proc   root   run    sbin   srv    sys    tmp    usr    var
+/ # cat  /etc/os-release 
+NAME="Alpine Linux"
+ID=alpine
+VERSION_ID=3.13.0
+PRETTY_NAME="Alpine Linux v3.13"
+HOME_URL="https://alpinelinux.org/"
+BUG_REPORT_URL="https://bugs.alpinelinux.org/"
+/ # mkdir hello ashutoshh
+/ # ls
+ashutoshh  dev        hello      lib        mnt        proc       run        srv        tmp        var
+bin        etc        home       media      opt        root       sbin       sys        usr
+/ # echo hiii  >a.txt 
+/ # ls
+a.txt      bin        etc        home       media      opt        root       sbin       sys        usr
+ashutoshh  dev        hello      lib        mnt        proc       run        srv        tmp        var
+/ # 
+❯ docker run  -ti  --rm   alpine  sh
+/ # ls
+bin    dev    etc    home   lib    media  mnt    opt    proc   root   run    sbin   srv    sys    tmp    usr    var
+/ # 
+
+
+```
+## volume with container play
+
+```
+❯ docker  volume  create  ashuvol1
+ashuvol1
+❯ docker  volume  ls
+DRIVER    VOLUME NAME
+local     ashuvol1
+❯ docker  volume  ls
+DRIVER    VOLUME NAME
+local     ashuvol1
+local     vivek1
+❯ docker  volume  ls
+DRIVER    VOLUME NAME
+local     ashuvol1
+local     venkvol
+local     vivek1
+❯ docker run  -ti  --name ashux1 -v  ashuvol1:/data:rw    alpine  sh
+/ # ls
+bin    data   dev    etc    home   lib    media  mnt    opt    proc   root   run    sbin   srv    sys    tmp    usr    var
+/ # cd  data/
+/data # ls
+/data # mkdir hello world 
+/data # ls
+hello  world
+/data # exit
+❯ docker  rm  ashux1
+ashux1
+❯ docker  volume  ls
+DRIVER    VOLUME NAME
+local     ashuvol1
+local     manjuvol1
+local     niranv1
+local     venkvol
+local     vivek1
+❯ docker  volume  inspect  ashuvol1
+[
+    {
+        "CreatedAt": "2021-01-27T06:57:53Z",
+        "Driver": "local",
+        "Labels": {},
+        "Mountpoint": "/mnt/oracle/volumes/ashuvol1/_data",
+        "Name": "ashuvol1",
+        "Options": {},
+        "Scope": "local"
+    }
+]
+❯ docker run  -ti  --name ashux1 -v  ashuvol1:/data:rw    oraclelinux:8.3  bash
+Unable to find image 'oraclelinux:8.3' locally
+8.3: Pulling from library/oraclelinux
+989beddc1550: Pull complete 
+Digest: sha256:2bb4ec43d6f9fca620f73eda8d924d4c17ab4672b23a76b518a92cb32507bdd1
+Status: Downloaded newer image for oraclelinux:8.3
+[root@5b60d4acd47f /]# 
+[root@5b60d4acd47f /]# 
+[root@5b60d4acd47f /]# ls
+bin  boot  data  dev  etc  home  lib  lib64  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var
+[root@5b60d4acd47f /]# cd  data/
+[root@5b60d4acd47f data]# ls
+hello  world
+
+```
+## docker volume 
+
+```
+4560  docker  volume  create  ashuvol1 
+ 4561  docker  volume  ls
+ 4562  docker run  -ti  --name ashux1 -v  ashuvol1:/data:rw    alpine  sh  
+ 4563  docker  rm  ashux1 
+ 4564  docker  volume  ls
+ 4565  docker  volume  inspect  ashuvol1 
+ 4566  docker run  -ti  --name ashux1 -v  ashuvol1:/data:rw    oraclelinux:8.3  bash   
+ 4567  docker run  -ti  --name ashux2 -v  ashuvol1:/data1:rw  -v  ashuvol2:/me:ro     oraclelinux:8.3  bash   
+ 4568  docker  volume ls
+ 4569  docker run  -ti  --name ashux3  -v  /etc:/me:ro     oraclelinux:8.3  bash   
+ 4570  history
+ 4571  cd Desktop
+ 4572  ls
+ 4573  cd oraclejan252021
+ 4574  ls
+ 4575  mv beginner-html-site-styled   htmlapp
+ 4576  ls
+ 4577  pwd
+ 4578  docker run -d --name x4 -v  /Users/fire/Desktop/oraclejan252021/htmlapp:/usr/share/nginx/html  -p 1188:80 nginx 
+ ```
+ 
+ ## portainer as volume 
+ 
+ 
+ ❯ docker run -d --name webui -p 9000:9000  -v  /var/run/docker.sock:/var/run/docke.sock portainer/portainer
+Unable to find image 'portainer/portainer:latest' locally
+latest: Pulling from portainer/portainer
+d1e017099d17: Pull complete 
+717377b83d5c: Pull complete 
+Digest: sha256:f8c2b0a9ca640edf508a8a0830cf1963a1e0d2fd9936a64104b3f658e120b868
+Status: Downloaded newer image for portainer/portainer:latest
+b47a9eb40990b4a9d255a25574600677630d009dbdb1e483d11546ba9311ba41
+❯ docker ps
+CONTAINER ID   IMAGE                 COMMAND                  CREATED          STATUS          PORTS                    NAMES
+b47a9eb40990   portainer/portainer   "/portainer"             8 seconds ago    Up 6 seconds    0.0.0.0:9000->9000/tcp   webui
+677908b09c49   alpine                "sh"                     3 minutes ago    Up 3 minutes                             niranx3
+4a17db91c757   nginx                 "/docker-entrypoint.…"   6 minutes ago    Up 6 minutes    0.0.0.0:1188->80/tcp     x4
+9d6a9c0e18a3   alpine                "sh"                     11 minutes ago   Up 11 minutes                            viveks
+
+```
