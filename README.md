@@ -467,4 +467,62 @@ commit: 7e8b5a89575945ba8f8246bfe547178c1a995198
 
 ```
 
+## minikube cluster 
+
+```
+❯ minikube start  --driver=docker
+😄  minikube v1.17.0 on Darwin 11.1
+✨  Using the docker driver based on user configuration
+👍  Starting control plane node minikube in cluster minikube
+🚜  Pulling base image ...
+💾  Downloading Kubernetes v1.20.2 preload ...
+    > preloaded-images-k8s-v8-v1....: 491.22 MiB / 491.22 MiB  100.00% 3.04 MiB
+🔥  Creating docker container (CPUs=2, Memory=1989MB) ...
+🐳  Preparing Kubernetes v1.20.2 on Docker 20.10.2 ...
+    ▪ Generating certificates and keys ...
+    ▪ Booting up control plane ...
+    ▪ Configuring RBAC rules ...
+🔎  Verifying Kubernetes components...
+🌟  Enabled addons: storage-provisioner, default-storageclass
+🏄  Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
+❯ minikube status
+minikube
+type: Control Plane
+host: Running
+kubelet: Running
+apiserver: Running
+kubeconfig: Configured
+timeToStop: Nonexistent
+
+❯ minikube ip
+192.168.49.2
+❯ minikube stop
+✋  Stopping node "minikube"  ...
+🛑  Powering off "minikube" via SSH ...
+🛑  1 nodes stopped.
+❯ minikube start
+😄  minikube v1.17.0 on Darwin 11.1
+✨  Using the docker driver based on existing profile
+👍  Starting control plane node minikube in cluster minikube
+🔄  Restarting existing docker container for "minikube" ...
+🐳  Preparing Kubernetes v1.20.2 on Docker 20.10.2 ...
+🔎  Verifying Kubernetes components...
+🌟  Enabled addons: storage-provisioner, default-storageclass
+🏄  Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
+❯ minikube status
+minikube
+type: Control Plane
+host: Running
+kubelet: Running
+apiserver: Running
+kubeconfig: Configured
+timeToStop: Nonexistent
+
+❯ minikube  ssh
+docker@minikube:~$ 
+docker@minikube:~$ exit
+logout
+
+
+```
 
