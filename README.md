@@ -526,3 +526,175 @@ logout
 
 ```
 
+
+## Installing kubectl that is k8s client 
+
+```
+❯ curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/darwin/amd64/kubectl"
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   161  100   161    0     0    404      0 --:--:-- --:--:-- --:--:--   403
+100 44.0M  100 44.0M    0     0  4777k      0  0:00:09  0:00:09 --:--:-- 7023k
+❯ chmod +x ./kubectl
+❯ sudo mv ./kubectl /usr/local/bin/kubectl
+Password:
+❯ kubectl version --client
+Client Version: version.Info{Major:"1", Minor:"20", GitVersion:"v1.20.2", GitCommit:"faecb196815e248d3ecfb03c680a4507229c2a56", GitTreeState:"clean", BuildDate:"2021-01-13T13:28:09Z", GoVersion:"go1.15.5", Compiler:"gc", Platform:"darwin/amd64"}
+
+```
+
+
+## link of kubectl 
+
+[link] ('https://kubernetes.io/docs/tasks/tools/install-kubectl/')
+
+## connecting to minikube cluster 
+
+```
+❯ kubectl  get   nodes
+NAME       STATUS   ROLES                  AGE   VERSION
+minikube   Ready    control-plane,master   47m   v1.20.2
+❯ kubectl cluster-info
+Kubernetes control plane is running at https://127.0.0.1:55020
+KubeDNS is running at https://127.0.0.1:55020/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+
+```
+
+## kubectl to  k8s cluster 
+
+<img src="kubectl.png">
+
+
+## kubectl to POD
+
+<img src="contpod.png">
+
+## creating containers 
+
+```
+❯ kubectl apply -f ashupod.yaml --dry-run=client
+pod/ashu-pod-1 created (dry run)
+❯ kubectl apply -f ashupod.yaml
+pod/ashu-pod-1 created
+❯ kubectl  get po
+NAME         READY   STATUS              RESTARTS   AGE
+ashu-pod-1   0/1     ContainerCreating   0          4s
+❯ kubectl  get pod
+NAME         READY   STATUS              RESTARTS   AGE
+ashu-pod-1   0/1     ContainerCreating   0          8s
+❯ kubectl  get pod
+NAME         READY   STATUS              RESTARTS   AGE
+ashu-pod-1   0/1     ContainerCreating   0          14s
+❯ kubectl  get pod
+NAME         READY   STATUS              RESTARTS   AGE
+ashu-pod-1   0/1     ContainerCreating   0          23s
+❯ kubectl  get pod  -w
+NAME         READY   STATUS              RESTARTS   AGE
+ashu-pod-1   0/1     ContainerCreating   0          26s
+ashu-pod-1   1/1     Running             0          32s
+^C%                                                                                                                            ❯ kubectl  get pod
+NAME         READY   STATUS    RESTARTS   AGE
+ashu-pod-1   1/1     Running   0          37s
+
+```
+
+
+## describe pod 
+
+```
+❯ kubectl  describe pod ashu-pod-1
+Name:         ashu-pod-1
+Namespace:    default
+Priority:     0
+Node:         minikube/192.168.49.2
+Start Time:   Wed, 27 Jan 2021 16:55:46 +0530
+Labels:       <none>
+Annotations:  <none>
+Status:       Running
+IP:           172.17.0.3
+IPs:
+  IP:  172.17.0.3
+Containers:
+  ashuc1:
+    Container ID:   docker://f19a7c4092a5f4b89dd2751e6ca2e890063025a415bf781b1172585b53ecb7b9
+    Image:          nginx
+    Image ID:       docker-pullable://nginx@sha256:10b8cc432d56da8b61b070f4c7d2543a9ed17c2b23010b43af434fd40e2ca4aa
+    Port:           80/TCP
+    Host Port:      0/TCP
+    State:          Running
+
+```
+
+## to access application using client 
+
+```
+ kubectl port-forward  ashu-pod-1  2233:80
+Forwarding from 127.0.0.1:2233 -> 80
+Forwarding from [::1]:2233 -> 80
+Handling connection for 2233
+Handling connection for 2233
+
+```
+
+## auto generate yaml / json 
+
+```
+❯ kubectl  run  ashupod2  --image=nginx  --port 80 --dry-run=client
+pod/ashupod2 created (dry run)
+❯ kubectl  run  ashupod2  --image=nginx  --port 80 --dry-run=client  -o yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: ashupod2
+  name: ashupod2
+spec:
+  containers:
+  - image: nginx
+    name: ashupod2
+    ports:
+    - containerPort: 80
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+❯ kubectl  run  ashupod2  --image=nginx  --port 80 --dry-run=client  -o json
+{
+    "kind": "Pod",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "ashupod2",
+        "creationTimestamp": null,
+        "labels": {
+            "run": "ashupod2"
+        }
+    },
+    "spec": {
+        "containers": [
+            {
+                "name": "ashupod2",
+                "image": "nginx",
+                "ports": [
+                    {
+                        "containerPort": 80
+                    }
+                ],
+                "resources": {}
+            }
+        ],
+        "restartPolicy": "Always",
+        "dnsPolicy": "ClusterFirst"
+
+
+```
+
+## store yaml 
+
+```
+kubectl  run  ashupod2  --image=nginx  --port 80 --dry-run=client  -o yaml  >pod2.yml
+
+```
+
