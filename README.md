@@ -162,4 +162,125 @@ round-trip min/avg/max = 0.110/0.116/0.127 ms
 
 ```
 
+## POrt forwarding 
+
+<img src="portf.png">
+
+## docker overlay networking using swarm 
+
+<img src="overlay.png">
+
+# storage in Docker & containers 
+
+<img src="st.png">
+
+## for docker engine creating space 
+
+```
+[root@ip-172-31-43-246 ~]# mkfs.xfs   /dev/xvdf 
+meta-data=/dev/xvdf              isize=512    agcount=4, agsize=2752512 blks
+         =                       sectsz=512   attr=2, projid32bit=1
+         =                       crc=1        finobt=1, sparse=0
+data     =                       bsize=4096   blocks=11010048, imaxpct=25
+         =                       sunit=0      swidth=0 blks
+naming   =version 2              bsize=4096   ascii-ci=0 ftype=1
+log      =internal log           bsize=4096   blocks=5376, version=2
+         =                       sectsz=512   sunit=0 blks, lazy-count=1
+realtime =none                   extsz=4096   blocks=0, rtextents=0
+[root@ip-172-31-43-246 ~]# 
+[root@ip-172-31-43-246 ~]# mkdir   /mnt/oracle
+[root@ip-172-31-43-246 ~]# mount  /dev/xvdf  /mnt/oracle/
+[root@ip-172-31-43-246 ~]# vim   /etc/fstab 
+[root@ip-172-31-43-246 ~]# mount -a
+
+```
+
+## configuring docker engine 
+
+```
+[root@ip-172-31-43-246 ~]# cat  /etc/sysconfig/docker
+# The max number of open files for the daemon itself, and all
+# running containers.  The default value of 1048576 mirrors the value
+# used by the systemd service unit.
+DAEMON_MAXFILES=1048576
+
+# Additional startup options for the Docker daemon, for example:
+# OPTIONS="--ip-forward=true --iptables=true"
+# By default we limit the number of open files per container
+OPTIONS="--default-ulimit nofile=1024:4096  -H tcp://0.0.0.0:2375  -g  /mnt/oracle"
+
+# How many seconds the sysvinit script waits for the pidfile to appear
+# when starting the daemon.
+DAEMON_PIDFILE_TIMEOUT=10
+
+```
+
+
+## loading services 
+
+```
+[root@ip-172-31-43-246 ~]# systemctl daemon-reload 
+[root@ip-172-31-43-246 ~]# systemctl restart docker
+
+```
+
+## checking it 
+
+```
+❯ docker  info
+Client:
+ Context:    ashuaws
+ Debug Mode: false
+ Plugins:
+  app: Docker App (Docker Inc., v0.9.1-beta3)
+  buildx: Build with BuildKit (Docker Inc., v0.5.1-docker)
+  scan: Docker Scan (Docker Inc., v0.5.0)
+
+Server:
+ Containers: 0
+  Running: 0
+  Paused: 0
+  Stopped: 0
+ Images: 0
+ Server Version: 19.03.13-ce
+ Storage Driver: overlay2
+  Backing Filesystem: xfs
+  Supports d_type: true
+  Native Overlay Diff: true
+ Logging Driver: json-file
+ Cgroup Driver: cgroupfs
+ Plugins:
+  Volume: local
+  Network: bridge host ipvlan macvlan null overlay
+  Log: awslogs fluentd gcplogs gelf journald json-file local logentries splunk syslog
+ Swarm: inactive
+ Runtimes: runc
+ Default Runtime: runc
+ Init Binary: docker-init
+ containerd version: c623d1b36f09f8ef6536a057bd658b3aa8632828
+ runc version: ff819c7e9184c13b7c2607fe6c30ae19403a7aff
+ init version: de40ad0 (expected: fec3683)
+ Security Options:
+  seccomp
+   Profile: default
+ Kernel Version: 4.14.209-160.339.amzn2.x86_64
+ Operating System: Amazon Linux 2
+ OSType: linux
+ Architecture: x86_64
+ CPUs: 2
+ Total Memory: 3.85GiB
+ Name: ip-172-31-43-246.ec2.internal
+ ID: 4MIK:ZUZD:J3FL:SBMM:YOIK:Y4YP:RIPI:6VFS:4IG5:F2MS:2NBY:E6DH
+ Docker Root Dir: /mnt/oracle
+
+```
+
+
+## restoring old location data to new location 
+
+```
+ 13  rsync -avp  /var/lib/docker/  /mnt/oracle/
+   14  systemctl restart docker 
+   
+```
 
