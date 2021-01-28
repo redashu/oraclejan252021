@@ -702,5 +702,28 @@ deployment.apps/myapp image updated
  4883  kubectl  rollout status deployment myapp
  
  ```
+ ## pushing image to ACR. 
  
+ ```
+  docker pull alpine
+Using default tag: latest
+latest: Pulling from library/alpine
+596ba82af5aa: Pull complete 
+Digest: sha256:d9a7354e3845ea8466bb00b22224d9116b183e594527fb5b6c3d30bc01a20378
+Status: Downloaded newer image for alpine:latest
+docker.io/library/alpine:latest
+❯ 
+❯ docker login  oracleindia.azurecr.io  -u  oracleindia
+Password: 
+Login Succeeded
+❯ docker  tag  alpine   oracleindia.azurecr.io/alpine:v1
+❯ 
+❯ docker push  oracleindia.azurecr.io/alpine:v1
+The push refers to repository [oracleindia.azurecr.io/alpine]
+c04d1437198b: Pushing [==================================================>]   5.88MB
+
+
+
+```
+
 
