@@ -249,4 +249,77 @@ viveks1         NodePort    10.102.129.234   <none>        1235:32448/TCP   11m 
 ```
 
 
+## END USER VIEW TO APP ON K8S 
 
+<img src="append.png">
+
+## Pods in More detailed way  with security and troubleshooting 
+
+## creating alpine pod 
+
+```
+kubectl run  ashupod1 --image=alpine --dry-run=client -o yaml >alp.yml
+```
+
+## error check 
+
+```
+❯ kubectl apply -f alp.yml
+pod/ashupod1 created
+❯ kubectl  get  po
+NAME       READY   STATUS             RESTARTS   AGE
+ashupod1   0/1     ImagePullBackOff   0          5s
+❯ kubectl  describe   po ashupod1
+Name:         ashupod1
+Namespace:    default
+Priority:     0
+Node:         minion-node-2/172.31.44.252
+Start Time:   Thu, 28 Jan 2021 12:41:25 +0530
+Labels:       run=ashupod1
+Annotations:  cni.projectcalico.org/podIP: 192.168.97.75/32
+              cni.projectcalico.org/podIPs: 192.168.97.75/32
+Status:       Pending
+IP:           192.168.97.75
+IPs:
+  IP:  192.168.97.75
+Containers:
+  ashupod1:
+    Container ID:   
+    Image:          alpinee
+    Image ID:       
+    Port:           <none>
+
+```
+
+## error troubleshooting options 
+
+<img src="imgpull.png">
+
+## crashloopbackoff / completed error solving 
+
+<img src="crash.png">
+
+## more useful commands
+
+```
+ 4750  kubectl  logs  ashupod1 
+ 4751  kubectl  logs  ashupod1  -f
+❯ kubectl exec -it ashupod1  -- sh
+/ # 
+/ # 
+/ # cat  /etc/os-release 
+NAME="Alpine Linux"
+ID=alpine
+VERSION_ID=3.13.0
+PRETTY_NAME="Alpine Linux v3.13"
+HOME_URL="https://alpinelinux.org/"
+BUG_REPORT_URL="https://bugs.alpinelinux.org/"
+/ # ps -e
+PID   USER     TIME  COMMAND
+    1 root      0:00 ping 8.8.8.8
+    6 root      0:00 sh
+   12 root      0:00 ps -e
+/ # 
+
+
+```
