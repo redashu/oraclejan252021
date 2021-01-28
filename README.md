@@ -323,3 +323,180 @@ PID   USER     TIME  COMMAND
 
 
 ```
+
+
+## application and pod security 
+
+### limiting resource in k8s 
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: ashupod1
+  name: ashupod1
+spec:
+  containers:
+  - image: alpine  # name of image 
+    name: ashupod1 # name of container
+    command: ["/bin/sh","-c","ping 8.8.8.8"] # parent process of container 
+    resources:
+     requests: # request resource for this container only
+      memory: "100Mi"
+      cpu: "250m"
+     limits:  # the max container can use 
+      memory: "256Mi"  # MiB
+      cpu: "500m" # mili core 
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+
+```
+
+## pod limits 
+
+[limits] ('https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/')
+
+
+
+# namespace in k8s
+
+<img src="ns.png">
+
+## checking default namespaces
+
+```
+❯ kubectl get namespace
+NAME              STATUS   AGE
+default           Active   4h44m
+kube-node-lease   Active   4h44m
+kube-public       Active   4h44m
+kube-system       Active   4h44m
+```
+
+## kube-system namespace 
+
+```
+ kubectl get  po  -n kube-system
+NAME                                       READY   STATUS    RESTARTS   AGE
+calico-kube-controllers-744cfdf676-m2266   1/1     Running   0          4h43m
+calico-node-mr9bf                          1/1     Running   0          4h43m
+calico-node-pkzq5                          1/1     Running   0          4h43m
+calico-node-q894l                          1/1     Running   0          4h43m
+calico-node-x757q                          1/1     Running   0          4h43m
+coredns-74ff55c5b-hv7fx                    1/1     Running   0          4h45m
+coredns-74ff55c5b-nr7r5                    1/1     Running   0          4h45m
+etcd-master-node                           1/1     Running   0          4h46m
+kube-apiserver-master-node                 1/1     Running   0          4h46m
+kube-controller-manager-master-node        1/1     Running   0          4h46m
+kube-proxy-58fpx                           1/1     Running   0          4h44m
+kube-proxy-7mvc9                           1/1     Running   0          4h45m
+kube-proxy-kbm66                           1/1     Running   0          4h45m
+kube-proxy-qpn2m                           1/1     Running   0          4h45m
+kube-scheduler-master-node                 1/1     Running   0          4h46m
+```
+
+## deploy pod in custom namespace 
+
+```
+❯ kubectl apply -f alp.yml  -n ashu-space
+pod/ashupod1 created
+❯ kubectl  get  po -n ashu-space
+NAME       READY   STATUS    RESTARTS   AGE
+ashupod1   1/1     Running   0          16s
+❯ kubectl  get  po -n ashu-space
+NAME       READY   STATUS    RESTARTS   AGE
+ashupod1   1/1     Running   0          40s
+❯ kubectl delete po ashupod1 -n ashu-space
+pod "ashupod1" deleted
+
+
+
+```
+
+# Replication controller (RC)
+
+<img src="rc.png">
+
+## Replication controller writing 
+
+```
+apiVersion: v1
+kind: ReplicationController # new api-resource like POD 
+metadata:
+ namespace: ashu-space  # namespace name 
+ name: ashurc111 # name of RC 
+spec:
+ replicas: 1 # no of pod 
+ template: # using template RC will create Pods 
+  metadata:
+   labels:
+    x: helloashuapp1
+  spec:
+   containers:
+   - image: nginx
+     name: ashuc1
+     ports:
+     - containerPort: 80
+     
+ ```
+ 
+ ## deploying RC 
+ 
+ ```
+ ❯ kubectl  apply -f ashurc.yaml
+replicationcontroller/ashurc111 created
+❯ 
+❯ kubectl  get  rc  -n ashu-space
+NAME        DESIRED   CURRENT   READY   AGE
+ashurc111   1         1         1       9s
+❯ kubectl  get  po  -n ashu-space
+NAME              READY   STATUS    RESTARTS   AGE
+ashupod1          1/1     Running   0          13m
+ashurc111-d8d9c   1/1     Running   0          20s
+
+```
+
+## Expose can create a service by automatically matching label of POds 
+
+```
+❯ kubectl get  rc -n ashu-space
+NAME        DESIRED   CURRENT   READY   AGE
+ashurc111   1         1         1       39s
+❯ kubectl  expose  rc  ashurc111  --type NodePort --port 1234 --target-port 80 -n ashu-space
+service/ashurc111 exposed
+❯ kubectl get  svc -n ashu-space
+NAME        TYPE       CLUSTER-IP    EXTERNAL-IP   PORT(S)          AGE
+ashurc111   NodePort   10.98.149.9   <none>        1234:32686/TCP   9s
+
+```
+
+## scaling RC 
+
+## using command line 
+
+```
+ kubectl  scale  rc  ashurc111 --replicas=5 -n ashu-space 
+ 
+```
+
+## updating YAML file 
+
+```
+apiVersion: v1
+kind: ReplicationController # new api-resource like POD 
+metadata:
+ namespace: ashu-space  # namespace name 
+ name: ashurc111 # name of RC 
+spec:
+ replicas: 2 # no of pod 
+ template: # using template R
+ 
+```
+
+## Deploymentin k8s 
+
+<img src="dep.png">
+
