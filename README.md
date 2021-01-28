@@ -572,5 +572,135 @@ ashudep11    NodePort   10.107.158.45    <none>        1234:30172/TCP   27s
 ashusss111   NodePort   10.103.201.213   <none>        1234:32018/TCP   13s
 
 ```
+# Deployment with multi upgrade of application 
 
+## changin default namespace 
+
+```
+kubectl  config set-context  --current --namespace=ashu-space
+```
+
+## app deployment 
+
+
+```
+kubectl  create  deployment  myapp  --image=dockerashu/jan2021:v1  --dry-run=client -o yaml >app.yml
+
+```
+
+
+###
+
+```
+4850  kubectl  create  deployment  myapp  --image=dockerashu/jan2021:v1  --dry-run=client -o yaml >app.yml
+ 4851  kubectl apply -f  app.yml 
+ 4852  kubectl  get  deploy 
+ 4853  history
+ 4854  kubectl  get  deploy 
+ 4855  kubectl expose deploy  myapp --type NodePort --port 1234 --target-port 80 
+ 4856  kubectl  get  deploy,svc
+ 4857  kubectl scale deploy myapp --replicas=3 
+ 4858  kubectl  get  deploy
+
+```
+
+## checking current revision no
+
+```
+❯ kubectl describe deploy  myapp
+Name:                   myapp
+Namespace:              ashu-space
+CreationTimestamp:      Thu, 28 Jan 2021 16:27:28 +0530
+Labels:                 app=myapp
+Annotations:            deployment.kubernetes.io/revision: 1
+Selector:               app=myapp
+
+```
+
+## checking version history 
+
+```
+❯ kubectl  rollout history deployment myapp
+deployment.apps/myapp 
+REVISION  CHANGE-CAUSE
+1         <none>
+
+
+```
+
+## updating image
+
+```
+❯ kubectl  set  image  deployment  myapp  jan2021=dockerashu/jan2021:v2
+deployment.apps/myapp image updated
+
+```
+
+## deployment history 
+
+```
+4823  kubectl  create  deployment  ashudep11  --image=dockerashu/httpd:oraclejan2021v1 --namespace ashu-space  --dry-run=client -o yaml >ashudep.yml
+ 4824  history
+ 4825  kubectl delete all --all -n ashu-space 
+ 4826  kubectl apply -f  ashudep.yml 
+ 4827  kubectl  get  deployments  -n ashu-space 
+ 4828  kubectl  get  deploy   -n ashu-space 
+ 4829  kubectl get  rs  -n ashu-space 
+ 4830  kubectl get  po   -n ashu-space 
+ 4831  kubectl  get deploy -n ashu-space 
+ 4832  kubectl get  svc -n ashu-space 
+ 4833  kubectl expose deployment ashudep11  --type NodePort --port 1234 --target-port 80 -n ashu-space 
+ 4834  kubectl expose deployment ashudep11  --type NodePort --port 1234 --target-port 80 --name ashusss111 -n ashu-space 
+ 4835  kubectl  get  svc -n ashu-space 
+ 4836  history
+ 4837  cd Desktop/beginner-html-site-styled-gh-pages
+ 4838  ls -a
+ 4839  rm -rvf  *.md LICENSE .git  
+ 4840  ls  -a
+ 4841  docker build  -t   dockerashu/jan2021:v1  https://github.com/redashu/oracletestapp.git  
+ 4842  docker build  -t   dockerashu/jan2021:v1  https://github.com/redashu/oracletestapp.git\#main
+ 4843  docker push    dockerashu/jan2021:v1  
+ 4844  kubectl delete all --all -n ashu-space 
+ 4845  kubectl  get  ns
+ 4846  kubectl  config set-context  --current --namespace=ashu-space 
+ 4847  kubectl  get  po 
+ 4848  cd Desktop/oraclejan252021/pods
+ 4849  ls
+ 4850  kubectl  create  deployment  myapp  --image=dockerashu/jan2021:v1  --dry-run=client -o yaml >app.yml
+ 4851  kubectl apply -f  app.yml 
+ 4852  kubectl  get  deploy 
+ 4853  history
+ 4854  kubectl  get  deploy 
+ 4855  kubectl expose deploy  myapp --type NodePort --port 1234 --target-port 80 
+ 4856  kubectl  get  deploy,svc
+ 4857  kubectl scale deploy myapp --replicas=3 
+ 4858  kubectl  get  deploy
+ 4859  history
+ 4860  kubectl  get svc
+ 4861  kubectl describe deploy  myapp 
+ 4862  kubectl  rollout history deployment myapp
+ 4863  history
+ 4864  docker build  -t   dockerashu/jan2021:v2  https://github.com/redashu/oracletestapp.git\#main
+ 4865  docker push dockerashu/jan2021:v2  
+ 4866  kubectl describe deploy  myapp 
+ 4867  kubectl  set  image  deployment  myapp  jan2021=dockerashu/jan2021:v2
+ 4868  kubectl describe deploy  myapp 
+ 4869  history
+ 4870  kubectl get  po 
+ 4871  kubectl  rollout history deployment myapp
+ 4872  kubectl describe deploy  myapp 
+ 4873  docker build  -t   dockerashu/jan2021:v3  https://github.com/redashu/oracletestapp.git\#main
+ 4874  docker push dockerashu/jan2021:v3  
+ 4875  history
+ 4876  kubectl  set  image  deployment  myapp  jan2021=dockerashu/jan2021:v3
+ 4877  kubectl  rollout status deployment myapp
+ 4878  kubectl describe deploy  myapp 
+ 4879  kubectl get  po 
+ 4880  kubectl  rollout history deployment myapp
+ 4881  history
+ 4882  kubectl  rollout undo  deployment myapp  --to-revision=1 
+ 4883  kubectl  rollout status deployment myapp
+ 
+ ```
+ 
 
