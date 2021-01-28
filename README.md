@@ -155,3 +155,98 @@ status:
 
 ```
 
+## Lets deploy one more pod with service in single file
+
+
+```
+
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: ashuwebapp  # label of pod 
+  name: ashuwebapp
+spec:
+  containers:
+  - image: dockerashu/httpd:oraclejan2021v1
+    name: ashuwebapp
+    ports:
+    - containerPort: 80
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+
+---   #  seperator between two api resource type 
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashus2
+  name: ashus2
+spec:
+  ports:
+  - name: 1234-80
+    port: 1234
+    protocol: TCP
+    targetPort: 80
+  selector: # finder needs to have same label of pod 
+    run: ashuwebapp
+  type: NodePort
+status:
+  loadBalancer: {}
+
+
+```
+
+##
+
+```
+❯ kubectl create service   nodeport ashus2  --tcp  1234:80 --dry-run=client -o yaml  >>finalpod.yml
+❯ kubectl apply -f finalpod.yml
+pod/ashuwebapp created
+❯ kubectl apply -f finalpod.yml
+pod/ashuwebapp configured
+service/ashus2 created
+❯ kubectl get po
+NAME           READY   STATUS    RESTARTS   AGE
+ashuwebapp     1/1     Running   0          51s
+manju-pod-1    1/1     Running   0          10m
+niran-pod-1    1/1     Running   0          11m
+sat-pod-1      1/1     Running   0          10m
+satpod2        1/1     Running   0          9m12s
+suresh-pod-1   1/1     Running   0          11m
+venkat-pod-1   1/1     Running   0          10m
+vivek-pod-1    1/1     Running   0          10m
+❯ kubectl get po ashuwebapp --show-labels
+NAME         READY   STATUS    RESTARTS   AGE   LABELS
+ashuwebapp   1/1     Running   0          61s   run=ashuwebapp
+❯ kubectl get  svc
+NAME            TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+ashus2          NodePort    10.110.137.15    <none>        1234:31676/TCP   42s
+kubernetes      ClusterIP   10.96.0.1        <none>        443/TCP          12m
+manju1          NodePort    10.107.181.5     <none>        7001:31185/TCP   10m
+niran1          NodePort    10.107.55.80     <none>        3456:31594/TCP   11m
+samnodeports1   NodePort    10.109.42.24     <none>        1234:31141/TCP   10m
+sats1           NodePort    10.100.33.174    <none>        1239:32095/TCP   7m49s
+suresh2         NodePort    10.99.118.213    <none>        1234:32266/TCP   11m
+vensrvc1        NodePort    10.110.79.33     <none>        1234:32145/TCP   9m42s
+viveks1         NodePort    10.102.129.234   <none>        1235:32448/TCP   11m
+❯ kubectl get  svc  -o wide
+NAME            TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE     SELECTOR
+ashus2          NodePort    10.110.137.15    <none>        1234:31676/TCP   53s     run=ashuwebapp
+kubernetes      ClusterIP   10.96.0.1        <none>        443/TCP          12m     <none>
+manju1          NodePort    10.107.181.5     <none>        7001:31185/TCP   10m     x=hellomanju
+niran1          NodePort    10.107.55.80     <none>        3456:31594/TCP   11m     my=mylabel
+samnodeports1   NodePort    10.109.42.24     <none>        1234:31141/TCP   10m     dev=sam-pod-1
+sats1           NodePort    10.100.33.174    <none>        1239:32095/TCP   8m      x=satlabel1
+suresh2         NodePort    10.99.118.213    <none>        1234:32266/TCP   11m     x=suresh1
+vensrvc1        NodePort    10.110.79.33     <none>        1234:32145/TCP   9m53s   app=vensrvc1
+viveks1         NodePort    10.102.129.234   <none>        1235:32448/TCP   11m     true=vivekservice
+
+```
+
+
+
