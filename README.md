@@ -496,7 +496,81 @@ spec:
  
 ```
 
-## Deploymentin k8s 
+# Deployment in k8s 
 
 <img src="dep.png">
+
+
+## creating deployment file 
+
+```
+❯ kubectl  create  deployment  ashudep11  --image=dockerashu/httpd:oraclejan2021v1  --dry-run=client -o yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashudep11
+  name: ashudep11
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ashudep11
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: ashudep11
+    spec:
+      containers:
+      - image: dockerashu/httpd:oraclejan2021v1
+        name: httpd
+        resources: {}
+status: {}
+❯ kubectl  create  deployment  ashudep11  --image=dockerashu/httpd:oraclejan2021v1  --dry-run=client -o yaml >>ashudep.yml
+
+```
+
+
+## deployment reality 
+
+<img src="depreal.png">
+
+## deploying the deployment 
+
+```
+❯ kubectl apply -f  ashudep.yml
+deployment.apps/ashudep11 created
+❯ kubectl  get  deployments  -n ashu-space
+NAME        READY   UP-TO-DATE   AVAILABLE   AGE
+ashudep11   1/1     1            1           11s
+❯ kubectl  get  deploy   -n ashu-space
+NAME        READY   UP-TO-DATE   AVAILABLE   AGE
+ashudep11   1/1     1            1           16s
+❯ kubectl get  rs  -n ashu-space
+NAME                   DESIRED   CURRENT   READY   AGE
+ashudep11-6c675dd77c   1         1         1       23s
+❯ kubectl get  po   -n ashu-space
+NAME                         READY   STATUS    RESTARTS   AGE
+ashudep11-6c675dd77c-zvl22   1/1     Running   0          29s
+
+```
+
+
+## 
+
+```
+❯ kubectl expose deployment ashudep11  --type NodePort --port 1234 --target-port 80 -n ashu-space
+service/ashudep11 exposed
+❯ kubectl expose deployment ashudep11  --type NodePort --port 1234 --target-port 80 --name ashusss111 -n ashu-space
+service/ashusss111 exposed
+❯ kubectl  get  svc -n ashu-space
+NAME         TYPE       CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+ashudep11    NodePort   10.107.158.45    <none>        1234:30172/TCP   27s
+ashusss111   NodePort   10.103.201.213   <none>        1234:32018/TCP   13s
+
+```
+
 
