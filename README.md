@@ -1,1 +1,4 @@
-# oraclejan252021
+# final Day outline 
+
+<img src="today.png">
+
