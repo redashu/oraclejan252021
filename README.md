@@ -68,5 +68,74 @@ fi
 
 ```
 
+## .dockerignore 
+
+```
+❯ cat .dockerignore
+Dockerfile
+.dockerignore
+app1/*.md
+app1/LICENSE
+app1/.git
+
+app2/*.md
+app2/LICENSE
+app2/.git
+
+
+app3/*.md
+app3/LICENSE
+app3/.git
+
+```
+## building docker image 
+
+```
+docker build -t  dockerashu/mywebapp:oraclejan2021  .
+```
+
+
+## deployment of app1 for customer  
+
+```
+kubectl  create  deployment  multidep --image=dockerashu/mywebapp:oraclejan2021  --dry-run=client -o yaml >multi.yml
+
+```
+
+## creating configMap 
+
+```
+5006  kubectl  create  configmap ashucm --from-literal  x=app1  --from-literal y=app2  --from-literal z=app3 
+ 5007  kubectl  get  cm 
+ 5008  kubectl describe cm ashucm 
+```
+
+##  app1 
+
+```
+❯ kubectl  apply -f  multi.yml
+deployment.apps/multidep created
+❯ kubectl  get  deploy
+NAME       READY   UP-TO-DATE   AVAILABLE   AGE
+multidep   0/1     1            0           5s
+❯ 
+❯ 
+❯ kubectl get  rs
+NAME                 DESIRED   CURRENT   READY   AGE
+multidep-96f487778   1         1         1       11s
+❯ 
+❯ 
+❯ kubectl  get  po
+NAME                       READY   STATUS    RESTARTS   AGE
+ashuprvpod                 1/1     Running   0          56m
+multidep-96f487778-kctkp   1/1     Running   0          15s
+❯ kubectl expose deployment multidep --type NodePort  --port 1244 --target-port 80 --name app1svc1
+service/app1svc1 exposed
+❯ kubectl get  svc
+NAME       TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+app1svc1   NodePort   10.99.194.246   <none>        1244:31067/TCP   9s
+
+```
+
 
 
