@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: ashuhpod1
+  name: ashuhpod1
+spec:
+  nodeName: minion-node-3 # this manual scheduling 
+  volumes:
+  - name: ashuvol3
+    hostPath: # will take from minion node where pod will be scheduled 
+     path: /etc
+     type: Directory # means above location is already present 
+  containers:
+  - command:
+    - ping
+    - fb.com
+    image: alpine
+    name: ashuhpod1
+    volumeMounts:
+    - name: ashuvol3
+      mountPath: /mnt/myetcdata # will be created and /etc will be mounted here 
+      readOnly: true
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}

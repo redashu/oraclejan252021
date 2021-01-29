@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+ name: ashupv2 # name of pv
+spec:
+ capacity:
+  storage: 10Gi  # only 5 GB will be taken from NFS 
+ accessModes: 
+  - ReadWriteMany #  ReadWriteMany , ReadOnlyMany 
+ storageClassName: veryfast # slow , very-slow , veryfast  
+ nfs:
+  path: /data/ashu/2 # location of directory in NFS server 
+  server: 172.31.36.2 # ip of NFS 
+
+# Note: PV can't be bounded with any namespace 

@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ReplicationController # new api-resource like POD 
+metadata:
+ namespace: ashu-space  # namespace name 
+ name: ashurc111 # name of RC 
+spec:
+ replicas: 2 # no of pod 
+ template: # using template RC will create Pods 
+  metadata:
+   labels:
+    x: helloashuapp1 # label of pod
+  spec:
+   containers:
+   - image: nginx
+     name: ashuc1
+     ports:
+     - containerPort: 80

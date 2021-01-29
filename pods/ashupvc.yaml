@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+ name: ashupvc123 # claimname always from particular namespace 
+ namespace: ashu-space # ns name 
+spec:
+ accessModes:
+ - ReadWriteOnce 
+ resources:
+  requests:
+   storage: 4Gi # requesting size as per my application 
+ storageClassName: fast # class name 
+
+# binding of PVc to pv is pure random on behalf of best match 

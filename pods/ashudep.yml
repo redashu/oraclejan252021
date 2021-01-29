@@ -1,0 +1,25 @@
+apiVersion: apps/v1 # new api version 
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashudep11
+  name: ashudep11 # name of deployment 
+  namespace: ashu-space # namespace 
+spec:
+  replicas: 1 # no of pod 
+  selector:
+    matchLabels:
+      app: ashudep11
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: ashudep11
+    spec:
+      containers:
+      - image: dockerashu/httpd:oraclejan2021v1
+        name: httpd
+        resources: {}
+status: {}

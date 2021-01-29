@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: emppod1
+  name: emppod1 # name of the POD 
+spec:
+  volumes: # creating volumes one or more 
+  - name: ashuvol2 # name of volume 
+    emptyDir: {} # kubelet will choose some random location from scheduled minion node
+  containers:
+  - image: nginx # web app container 
+    name: ashuc11 # name container 
+    ports:
+    - containerPort: 80
+    volumeMounts:
+    - name: ashuvol2 # mounting same volume 
+      mountPath: /usr/share/nginx/html # doc root of nginx 
+  - image: alpine # helper container 
+    name: ashuc222 # container is update web page in 5 sec 
+    volumeMounts: # mounting the volume got created above 
+    - name: ashuvol2 # same as above 
+      mountPath: /mnt/ashu1/ # this location will be created in container 
+    command: ["/bin/sh","-c","while true;do echo 'Hello <input>' >>/mnt/ashu1/index.html; sleep 5; done"]
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}

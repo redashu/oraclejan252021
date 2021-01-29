@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: webui
+  name: webui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webui
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: webui
+    spec:
+      nodeName: minion-node-1 # optional 
+      volumes: 
+      - name: ashuvolui
+        hostPath:
+         path: /var/run/docker.sock
+         type: Socket
+      containers:
+      - image: portainer/portainer
+        name: portainer
+        volumeMounts:
+        - name: ashuvolui
+          mountPath: /var/run/docker.sock 
+        ports:
+        - containerPort: 9000
+        resources: {}
+status: {}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+ name: ashuss111
+spec:
+ ports:
+ - name: ashuport1
+   port: 1244
+   protocol: TCP
+   targetPort: 9000
+ type: NodePort
+ selector:
+  app: webui
+  

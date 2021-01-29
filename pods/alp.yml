@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  namespace: ashu-space # namespace name must exist 
+  creationTimestamp: null
+  labels:
+    run: ashupod1
+  name: ashupod1
+spec:
+  containers:
+  - image: oracleindia.azurecr.io/alpine:v1   # name of image 
+    name: ashupod1 # name of container
+    command: ["/bin/sh","-c","ping 8.8.8.8"] # parent process of container 
+    resources:
+     requests: # request resource for this container only
+      memory: "100Mi"
+      cpu: "250m"
+     limits:  # the max container can use 
+      memory: "256Mi"  # MiB
+      cpu: "500m" # mili core 
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}

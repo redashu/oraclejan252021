@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: ashuprvpod
+  name: ashuprvpod
+spec:
+  imagePullSecrets:  # to call secret from current namespace only
+  - name: ashusec # name of secret
+  containers:
+  - command: # replacement of Entrypoint parent process 
+    - ping
+    - fb.com
+    image: oracleindia.azurecr.io/alpine:v1
+    name: ashuprvpod
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}

@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: emppod
+  name: emppod # name of the POD 
+spec:
+  volumes: # creating volumes one or more 
+  - name: ashuvol1 # name of volume 
+    emptyDir: {} # kubelet will choose some random location from scheduled minion node
+  containers:
+  - image: alpine
+    name: emppod
+    volumeMounts: # mounting the volume got created above 
+    - name: ashuvol1 # same as above 
+      mountPath: /mnt/ashu # this location will be created in container 
+    command: ["/bin/sh","-c","while true;do cal >>/mnt/ashu/data.txt; sleep 3; done"]
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}

@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashuwebapp
+  name: ashuwebapp
+  namespace: ashu-space 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ashuwebapp
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: ashuwebapp
+    spec:
+      serviceAccount: default # by default defaul svc account will be used 
+      containers:
+      - image: wordpress:4.8-apache # docker image 
+        name: wordpress
+        ports:
+        - containerPort: 80
+        env: # to connect from DB
+        - name: WORDPRESS_DB_HOST #   predefine var 
+          value: ashudb # name of service of DB 
+        - name: WORDPRESS_DB_PASSWORD # predefine var 
+          valueFrom: # reading password from secret 
+           secretKeyRef:
+            name: ashudbsec
+            key: pw
+        resources: {}
+status: {}

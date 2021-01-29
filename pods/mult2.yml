@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: multidep2
+  name: multidep2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: multidep2
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: multidep2
+    spec:
+      containers:
+      - image: dockerashu/mywebapp:oraclejan2021
+        name: mywebapp
+        env: 
+        - name: customer
+          valueFrom:
+           configMapKeyRef:
+            name: ashucm
+            key: z
+        resources: {}
+status: {}

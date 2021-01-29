@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: ashuwebapp  # label of pod 
+  name: ashuwebapp
+spec:
+  containers:
+  - image: dockerashu/httpd:oraclejan2021v1
+    name: ashuwebapp
+    ports:
+    - containerPort: 80
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+
+# service defining 
+---   
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashus2
+  name: ashus2
+spec:
+  ports:
+  - name: 1234-80
+    port: 1234
+    protocol: TCP
+    targetPort: 80
+  selector: # finder needs to have same label of pod 
+    run: ashuwebapp
+  type: LoadBalancer
+status:
+  loadBalancer: {}
+
+

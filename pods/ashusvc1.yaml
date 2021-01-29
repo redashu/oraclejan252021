@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:  # label of service 
+    app: ashus1
+  name: ashus1  # name of service 
+spec:
+  ports:
+  - name: 1234-80
+    port: 1234  # service port that will be binded with svc IP 
+    protocol: TCP
+    targetPort: 80  # application port running in the POD 
+  selector:  #  this is the finder using label 
+   x: helloashu # you must have to put the exactly same label of POD here 
+  type: NodePort  # type of service we want to create
+status:
+  loadBalancer: {}
