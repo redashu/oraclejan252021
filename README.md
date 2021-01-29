@@ -109,6 +109,43 @@ kubectl  create  deployment  multidep --image=dockerashu/mywebapp:oraclejan2021 
  5007  kubectl  get  cm 
  5008  kubectl describe cm ashucm 
 ```
+## yaml of app1 
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: multidep
+  name: multidep # for first application deployment 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: multidep
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: multidep
+    spec:
+      containers:
+      - image: dockerashu/mywebapp:oraclejan2021
+        name: mywebapp
+        env: # for defining env var
+        - name: customer # name of env var from dockerfile 
+          valueFrom:
+           configMapKeyRef:
+            name: ashucm  # name of configMap 
+            key: x # key from ashucm config map 
+        resources: {}
+status: {}
+
+
+```
+
 
 ##  app1 
 
