@@ -311,6 +311,96 @@ BUG_REPORT_URL="https://bugs.alpinelinux.org/"
 
 ```
 
+## HostPAth vs emptyDir
 
+<img src="hostpath.png">
+
+## creating POD 
+
+```
+kubectl  run  ashuhpod1  --image=alpine --command ping fb.com --dry-run=client -o yaml >hostppod.yaml
+
+===
+
+░▒▓ ~/Desktop/oraclejan252021/pods ······································································· 12:44:03 PM ▓▒░─╮
+❯                                                                                                                           ─╯
+❯ kubectl apply -f hostppod.yaml
+pod/ashuhpod1 created
+❯ kubectl  get po
+NAME        READY   STATUS    RESTARTS   AGE
+ashuhpod1   1/1     Running   0          5s
+emppod1     2/2     Running   0          19m
+❯ kubectl exec -it ashuhpod1 -- sh
+/ # cd /mnt/myetcdata/
+/mnt/myetcdata # ls
+DIR_COLORS               default                  issue.net                passwd-                  services
+DIR_COLORS.256color      depmod.d                 krb5.conf                pkcs11                   sestatus.conf
+DIR_COLORS.lightbgcolor  dhcp                     krb5.conf.d              pki                      setuptool.d
+GREP_COLORS              docker                   kubernetes               plymouth                 shadow
+GeoIP.conf               docker-runtimes.d        ld.so.cache              pm                       shadow-
+GeoIP.conf.default       dracut.conf              ld.so.conf               popt.d                   shells
+NetworkManager           dracut.conf.d            ld.so.conf.d             postfix                  skel
+X11                      e2fsck.conf              libaudit.conf            ppp                      ssh
+acpi                     environment              libnl                    prelink.conf.d           ssl
+adjtime                  ethert
+
+```
+## portainer deployment 
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: webui
+  name: webui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webui
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: webui
+    spec:
+      nodeName: minion-node-1 # optional 
+      volumes: 
+      - name: ashuvolui
+        hostPath:
+         path: /var/run/docker.sock
+         type: Socket
+      containers:
+      - image: portainer/portainer
+        name: portainer
+        volumeMounts:
+        - name: ashuvolui
+          mountPath: /var/run/docker.sock 
+        ports:
+        - containerPort: 9000
+        resources: {}
+status: {}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+ name: ashuss111
+spec:
+ ports:
+ - name: ashuport1
+   port: 1244
+   protocol: TCP
+   targetPort: 9000
+ type: NodePort
+ selector:
+  app: webui
+  
+  
+```
 
 
