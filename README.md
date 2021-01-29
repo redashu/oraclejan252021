@@ -496,4 +496,238 @@ status: {}
 
 ```
 
+## EXPOSE deploy to clusterip service 
+
+```
+❯ kubectl get  deploy
+NAME     READY   UP-TO-DATE   AVAILABLE   AGE
+ashudb   1/1     1            1           16m
+❯ kubectl expose deploy  ashudb --type ClusterIP --port 3306  -n ashu-space
+service/ashudb exposed
+❯ kubectl get  svc
+NAME        TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE
+ashudb      ClusterIP   10.100.2.33    <none>        3306/TCP         10s
+
+```
+
+## Frontend app 
+
+### HTML as frontend and php as backend 
+
+```
+ kubectl create deployment  ashuwebapp --image=wordpress:4.8-apache --dry-run=client -o yaml >ashuwebapp.yaml
+ 
+ ===
+ 
+ apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashuwebapp
+  name: ashuwebapp
+  namespace: ashu-space 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ashuwebapp
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: ashuwebapp
+    spec:
+      containers:
+      - image: wordpress:4.8-apache # docker image 
+        name: wordpress
+        ports:
+        - containerPort: 80
+        env: # to connect from DB
+        - name: WORDPRESS_DB_HOST #   predefine var 
+          value: ashudb # name of service of DB 
+        - name: WORDPRESS_DB_PASSWORD # predefine var 
+          valueFrom: # reading password from secret 
+           secretKeyRef:
+            name: ashudbsec
+            key: pw
+        resources: {}
+status: {}
+
+```
+
+## deployment 
+
+```
+❯ kubectl apply -f ashuwebapp.yaml
+deployment.apps/ashuwebapp created
+❯ kubectl  get  po
+NAME                         READY   STATUS              RESTARTS   AGE
+ashudb-b9b958b54-8zjv2       1/1     Running             0          29m
+ashuwebapp-db45bd899-pbx5s   0/1     ContainerCreating   0          4s
+❯ kubectl  get  po -w
+NAME                         READY   STATUS              RESTARTS   AGE
+ashudb-b9b958b54-8zjv2       1/1     Running             0          30m
+ashuwebapp-db45bd899-pbx5s   0/1     ContainerCreating   0          10s
+ashuwebapp-db45bd899-pbx5s   1/1     Running             0          15s
+^C%                                                                                                                            ❯ kubectl  get  po
+NAME                         READY   STATUS    RESTARTS   AGE
+ashudb-b9b958b54-8zjv2       1/1     Running   0          30m
+ashuwebapp-db45bd899-pbx5s   1/1     Running   0          27s
+
+```
+
+## exposing deployment for creating service
+
+```
+❯ kubectl expose deploy ashuwebapp  --type NodePort --port 1234 --target-port 80 -n ashu-space
+service/ashuwebapp exposed
+❯ kubectl  get  svc
+NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+ashudb       ClusterIP   10.100.2.33     <none>        3306/TCP         14m
+ashuss111    NodePort    10.100.202.5    <none>        1244:32314/TCP   3h4m
+ashuwebapp   NodePort    10.110.161.84   <none>        1234:30504/TCP   4s
+
+```
+## dashboard deployment 
+
+```
+❯ kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml
+namespace/kubernetes-dashboard created
+serviceaccount/kubernetes-dashboard created
+service/kubernetes-dashboard created
+secret/kubernetes-dashboard-certs created
+secret/kubernetes-dashboard-csrf created
+secret/kubernetes-dashboard-key-holder created
+configmap/kubernetes-dashboard-settings created
+role.rbac.authorization.k8s.io/kubernetes-dashboard created
+clusterrole.rbac.authorization.k8s.io/kubernetes-dashboard created
+rolebinding.rbac.authorization.k8s.io/kubernetes-dashboard created
+clusterrolebinding.rbac.authorization.k8s.io/kubernetes-dashboard created
+deployment.apps/kubernetes-dashboard created
+service/dashboard-metrics-scraper created
+deployment.apps/dashboard-metrics-scraper created
+
+```
+
+
+## checking details 
+```
+❯ kubectl  get  deployment  -n kubernetes-dashboard
+NAME                        READY   UP-TO-DATE   AVAILABLE   AGE
+dashboard-metrics-scraper   1/1     1            1           33s
+kubernetes-dashboard        1/1     1            1           35s
+❯ kubectl  get  po  -n kubernetes-dashboard
+NAME                                         READY   STATUS    RESTARTS   AGE
+dashboard-metrics-scraper-7b59f7d4df-nvws4   1/1     Running   0          43s
+kubernetes-dashboard-74d688b6bc-qcnwb        1/1     Running   0          45s
+❯ kubectl  get  svc  -n kubernetes-dashboard
+NAME                        TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+dashboard-metrics-scraper   ClusterIP   10.105.178.239   <none>        8000/TCP   52s
+kubernetes-dashboard        ClusterIP   10.107.71.90     <none>        443/TCP    60s
+❯ kubectl  get  sa  -n kubernetes-dashboard
+NAME                   SECRETS   AGE
+default                1         70s
+kubernetes-dashboard   1         69s
+❯ kubectl  get  secret  -n kubernetes-dashboard
+NAME                               TYPE                                  DATA   AGE
+default-token-qbqmg                kubernetes.io/service-account-token   3      77s
+kubernetes-dashboard-certs         Opaque                                0      74s
+kubernetes-dashboard-csrf          Opaque                                1      74s
+kubernetes-dashboard-key-holder    Opaque                                2      73s
+kubernetes-dashboard-token-bsmbv   kubernetes.io/service-account-token   3      76s
+
+```
+## changing service type 
+
+```
+❯ kubectl  edit   svc kubernetes-dashboard   -n kubernetes-dashboard
+service/kubernetes-dashboard edited
+❯ kubectl  get  svc  -n kubernetes-dashboard
+NAME                        TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)         AGE
+dashboard-metrics-scraper   ClusterIP   10.105.178.239   <none>        8000/TCP        2m41s
+kubernetes-dashboard        NodePort    10.107.71.90     <none>        443:32292/TCP   2m49s
+
+```
+
+## checking tokens 
+
+```
+ kubectl  get  secret  -n kubernetes-dashboard
+NAME                               TYPE                                  DATA   AGE
+default-token-qbqmg                kubernetes.io/service-account-token   3      4m35s
+kubernetes-dashboard-certs         Opaque                                0      4m32s
+kubernetes-dashboard-csrf          Opaque                                1      4m32s
+kubernetes-dashboard-key-holder    Opaque                                2      4m31s
+kubernetes-dashboard-token-bsmbv   kubernetes.io/service-account-token   3      4m34s
+❯ 
+❯ 
+❯ kubectl  describe  secret kubernetes-dashboard-token-bsmbv   -n kubernetes-dashboard
+Name:         kubernetes-dashboard-token-bsmbv
+Namespace:    kubernetes-dashboard
+Labels:       <none>
+Annotations:  kubernetes.io/service-account.name: kubernetes-dashboard
+              kubernetes.io/service-account.uid: e5374a93-a398-4d6c-a817-4b7cb674b9e7
+
+Type:  kubernetes.io/service-account-token
+
+Data
+====
+ca.crt:     1066 bytes
+namespace:  20 bytes
+token:      eyJhbGciOiJSUzI1NiIsImtpZCI6IkZRb1NLQW1NMlBqXzAzaDNBamRydmZSNTJqNVI0emlxTWNPTUs2Y3NfSzQifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlcm5ldGVzLWRhc2hib2FyZCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJrdWJlcm5ldGVzLWRhc2hib2FyZC10b2tlbi1ic21idiIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50Lm5hbWUiOiJrdWJlcm5ldGVzLWRhc2hib2FyZCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6ImU1Mzc0YTkzLWEzOTgtNGQ2Yy1hODE3LTRiN2NiNjc0YjllNyIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDprdWJlcm5ldGVzLWRhc2hib2FyZDprdWJlcm5ldGVzLWRhc2hib2FyZCJ9.V922-INhMkKM6P4Ou1KC02qzuGOyBMZMAh-k0vzP3rBUK5Tu9ei5hUELwIhwfDXDiWWi8YS03KVCCgenz88OL_rEt3n9SOOPUkQ0HCDJmmOa0YAZ3dbr5CX-LHGUvZvNyy-p3YzwulszYqHvIVfyOTOhqBSkIYK1J2JocUeIYv1km4XN_yrMM0YZxXBkJu_wx
+
+```
+
+## giving cluster role to service account 
+
+```
+ kubectl  get  clusterroles
+NAME                                                                   CREATED AT
+admin                                                                  2021-01-28T04:34:35Z
+calico-kube-controllers                                                2021-01-28T04:37:06Z
+calico-node                                                            2021-01-28T04:37:06Z
+cluster-admin                                                          2021-01-28T04:34:35Z
+edit                                                                   2021-01-28T04:34:35Z
+kubeadm:get-nodes                                                      2021-01-28T04:34:37Z
+kubernetes-dashboard                                                   2021-01-29T11:17:40Z
+
+```
+
+## binding 
+
+## EKS 
+
+```
+ 5134  aws  configure 
+ 5135  aws eks help
+ 5136  aws eks  describe-cluster   --name ashuoraclecls1
+ 5137  cat  ~/.kube/config 
+ 5138  kubectl  config view 
+ 5139  kubectl  config get-contexts 
+ 5140  aws eks  update-kubeconfig  --name ashuoraclecls1 
+ 5141  kubectl  config get-contexts 
+ 5142  kubectl get  nodes
+ 5143  kubectl  get  ns
+
+```
+
+## more commands 
+
+```
+5145  kubectl  config get-contexts 
+ 5146  kubectl config use-context kubernetes-admin@kubernetes 
+ 5147  kubectl  config get-contexts 
+ 5148  kubectl get nodes
+ 5149  kubectl config use-context arn:aws:eks:us-east-1:061112302981:cluster/ashuoraclecls1 
+ 5150  kubectl get nodes
+ 5151  kubectl  create deployment dd1  --image=nginx 
+ 5152  kubectl get deploy 
+ 5153  kubectl expose deploy dd1  --type NodePort --port 80 
+ 5154  kubectl get  svc
+ 5155  kubectl expose deploy dd1  --type LoadBalancer --port 80  --name x1
+ 
+ ```
+ 
 
