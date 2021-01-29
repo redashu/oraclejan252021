@@ -403,4 +403,97 @@ spec:
   
 ```
 
+# PV & PVC
+
+<img src="pv.png">
+
+## creating pv
+
+```
+5066  kubectl apply -f  ashupv1.yaml 
+ 5067  kubectl  get  pv
+ 5068  kubectl describe pv ashupv1 
+ 5069  kubectl describe pv satpv1
+ 
+```
+
+## Now time for creating PVC 
+
+```
+apiVersion: v1
+kind: PersistentVolueClaim
+metadata:
+ name: ashupvc123 # claimname always from particular namespace 
+ namespace: ashu-space # ns name 
+spec:
+ accessModes:
+ - ReadWriteOnce 
+ resources:
+  requests:
+   storage: 4Gi # requesting size as per my application 
+ storageClassName: fast # class name 
+
+# binding of PVc to pv is pure random on behalf of best match 
+
+```
+## Multi tier app 
+
+## DB deployment 
+
+```
+kubectl  create deployment  ashudb --image=mysql:5.6  --dry-run=client -o yaml  >ashudbwithpvc.yaml
+
+```
+
+## creating secret for db
+```
+kubectl create secret  generic  ashudbsec --from-literal pw=Oracle123 -n ashu-space
+```
+
+## DB yaml 
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashudb
+  name: ashudb # name fo deployment 
+  namespace: ashu-space # namespace 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ashudb
+  strategy: {}
+  template:  # template of DB pod 
+    metadata:
+      creationTimestamp: null
+      labels: # label of POD 
+        app: ashudb
+    spec:
+      volumes: # creating volume from PVC 
+      - name: ashudbvol # name of volume 
+        persistentVolumeClaim:
+         claimName: ashupvc123  # name of PVC
+      containers:
+      - image: mysql:5.6
+        name: mysql
+        ports:
+        - containerPort: 3306 # default mysql port
+        volumeMounts:
+        - name: ashudbvol 
+          mountPath: /var/lib/mysql # default location of mysql DB directory 
+        env:
+        - name: MYSQL_ROOT_PASSWORD  # predefine env var in mysql image
+          valueFrom:
+           secretKeyRef: # reading password from secret api-resource
+            name: ashudbsec # name of secret 
+            key: pw # key of sec
+        resources: {}
+status: {}
+
+```
+
 
